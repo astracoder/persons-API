@@ -1,9 +1,15 @@
 import express from 'express';
+import 'dotenv/config';
+
 const server = express();
-const PORT = 3000;
+server.use(express.json());
 
-server.get('/', (req, res) => {
-    return res.send('Home');
-});
+import router from './Routes/routes';
 
-export { server, PORT };
+interface Test {
+
+}
+
+server.use(router);
+
+export default server;
