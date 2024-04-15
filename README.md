@@ -8,5 +8,5 @@
 </p>
 
 <p>
-  It's a simple API that does a CRUD with few validations, I want and need to implement improvements to it over time. I will try to create the front-end using React.JS and TailwindCSS and use this API.
+  It is a slightly more complex API, which has several checks and even the token system.
 </p>
