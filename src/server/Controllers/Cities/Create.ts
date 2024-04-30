@@ -1,34 +1,37 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import * as yup from 'yup';
 import { StatusCodes } from "http-status-codes";
 
 interface ICities {
     name: string,
+    state: string
 }
 
-const bodyValidation: yup.Schema<ICities> = yup.object().shape({
-    name: yup.string().required().min(3)
+const bodyValidation: yup.ObjectSchema<ICities> = yup.object().shape({
+    name: yup.string().required().min(3),
+    state: yup.string().required().min(3)
 });
 
-export const create = async (req: Request<{}, {}, ICities>, res: Response) => {
+export const createBodyValidator: RequestHandler = async (req, res, next) => {
+    const errors: Record<string, string> = {};
+    
     try {
-        let validationData: ICities | undefined = await bodyValidation.validate(req.body, { abortEarly: false });
-        return res.status(StatusCodes.BAD_REQUEST).send(validationData);
+        await bodyValidation.validate(req.body, { abortEarly: false });
+        res.status(StatusCodes.ACCEPTED).send("Cidade cadastrada!");
+        return next();
     } catch(err) {
         const yupError = err as yup.ValidationError;
-        const validationErrors: Record<string, string> = {
-
-        }
 
         yupError.inner.forEach(error => {
             if(!error.path) return;
-            validationErrors[error.path] = error.message;
-        })
-
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            errors: {
-                default: yupError.message
-            }
-        })
+            errors[error.path] = error.message;
+            console.log(errors);
+        });
+        
+        return res.status(StatusCodes.BAD_REQUEST).json(errors)
     }
+}
+
+export const create: RequestHandler = async (req, res, next) => {
+    console.log("Enviado ao banco! " + req.body.name + " " +req.body.state);
 }
